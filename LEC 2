@@ -1,0 +1,180 @@
+## ABOUT LEC 2
+
+## Domain independent heuristics
+
+• Deriving heuristics for individual problems is time consuming 
+
+• Domain independent heuristics tend to work well in planning
+
+• Need specific representations
+
+如果要建立一个启发式的planning，那么这个时候有两个问题。一个是Domain dependent的比较有局限性，而如果使用广义的heuristics会涉及到使用特殊的表达方式。
+
+课程的任务就是：
+
+​	We will look at specifying planning problems using 
+
+​	• STRIPS
+
+​	• Satisfiability
+
+​	• Planning graph
+
+## Logic notation 逻辑术语
+
+**Term**: an object in the world. Can be a variable, constant or function
+
+​	eg: a, shaky, 
+
+**Atomic sentence** or **Atom**: a predicate symbol, optionally followed by a parenthesized list of terms
+
+​	eg: Brother(a,b)
+
+**Literal**: atom or its negation
+
+​	eg: Brother(a,b)   ¬Brother(a,b)
+
+ **Ground literal**: A literal with no variable
+
+​	eg: Brother (Jack, John)
+
+**Sentence** or **Formula**: Formed from atoms together with quantifiers (∀, ∃), logical connectives (∧,∨, ¬), equality symbol (=)
+
+​	Sentence can take values *𝑇𝑟𝑢𝑒* or *𝐹𝑎𝑙𝑠𝑒* • E.g.,
+
+**Substitution**: replaces variables by terms • E.g., [x/y]
+
+**Unifier**: takes 2 sentences and returns a substitution that makes the sentence look identical, if such a substitution exists
+
+• E.g., *Unify*( Brother(x,y), Brother(x,z))
+ We cannot say 𝑈𝑛𝑖𝑓𝑦(𝐵𝑟𝑜𝑡h𝑒𝑟(𝐽𝑜h𝑛, 𝑥), 𝑀𝑜𝑡h𝑒𝑟(𝑦, 𝐽𝑎𝑛𝑒))
+
+**most general unifier (MGU)**:
+
+## components To specify a problem
+
+1. Initial state
+2. Goal test
+3. Set of actions
+4. Transition model 
+5. Path cost
+
+**STRIPS** have:
+
+- Initial state 
+- Actions available
+- Result of applying an action in a state
+- Goal state
+
+## STRIPS
+
+State is represented by a **conjunction of positive literals** that are **grounded and function-free**
+
+State is a **conjunction fluent**s. E.g., 𝐴𝑡 𝑇𝑟𝑢𝑐𝑘1, 𝑇𝑢𝑎𝑠 ∧ 𝐴𝑡(𝑇𝑟𝑢𝑐𝑘2, 𝑊𝑜𝑜𝑑𝑙𝑎𝑛𝑑𝑠)
+
+Literals are **grounded boolean variables**, which are 𝐴𝑡(𝑇𝑟𝑢𝑐𝑘1,𝑇𝑢𝑎𝑠)
+
+### NOT allowed in state description
+
+• E.g., 𝐴𝑡(𝑥, 𝑦) because it is not grounded
+ • ¬𝑃𝑜𝑜𝑟 because it is a negation
+ • 𝐴𝑡(𝐹𝑎𝑡h𝑒𝑟(𝐹𝑟𝑒𝑑), 𝑆𝑦𝑑𝑛𝑒𝑦) because Strips doesn’t allow functions
+
+**Goal** is a **partially specified stat**e, represented as a conjunction of **positive ground literals**
+
+**Action schema**: A set of actions, using lifted representation使用升降式表示
+
+EG:
+𝐴𝑐𝑡𝑖𝑜𝑛(𝐹𝑙𝑦(𝑝, 𝑓𝑟𝑜𝑚, 𝑡𝑜),
+
+𝑃𝑟𝑒𝑐𝑜𝑛𝑑: 𝐴𝑡 𝑝, 𝑓𝑟𝑜𝑚 ∧ 𝑃𝑙𝑎𝑛𝑒 𝑝 ∧ 𝐴𝑖𝑟𝑝𝑜𝑟𝑡 𝑓𝑟𝑜𝑚 ∧ 𝐴𝑖𝑟𝑝𝑜𝑟𝑡(𝑡𝑜) 
+
+𝐸𝑓𝑓𝑒𝑐𝑡:¬𝐴𝑡 𝑝,𝑓𝑟𝑜𝑚 ∧𝐴𝑡(𝑝,𝑡𝑜))
+
+**Ground actions** : obtained by instantiating(实例化) the variables in the schema
+
+E.g.,
+ 𝐴𝑐𝑡𝑖𝑜𝑛(𝐹𝑙𝑦(𝑃 , 𝑆𝐹𝑂, 𝑆𝐼𝑁),
+
+𝑃𝑟𝑒𝑐𝑜𝑛𝑑: 𝐴𝑡 𝑃 , 𝑆𝐹𝑂 ∧ 𝑃𝑙𝑎𝑛𝑒 𝑃 ∧ 𝐴𝑖𝑟𝑝𝑜𝑟𝑡 𝑆𝐹𝑂 ∧ 𝐴𝑖𝑟𝑝𝑜𝑟𝑡(𝑆𝐼𝑁)
+
+𝐸𝑓𝑓𝑒𝑐𝑡:¬𝐴𝑡𝑃,𝑆𝐹𝑂 ∧𝐴𝑡(𝑃,𝑆𝐼𝑁))
+
+**Preconditions & effects**: conjunctions of literals.
+
+​	Precondition is a conjunction of function-free positive literals
+
+**Effects** – conjunction of **function-free (positive/negative) literals**
+
+**fluents**: Result of executing 𝑎 in state 𝑠 is a state 𝑠′ which is a set of fluents formed as follows.
+
+​	FOR instance:
+
+1.  Start from *s*
+
+2. Remove fluents that appear as negative literals in the effect (delete list) ***DEL(a)***
+
+3. Add fluents that appear as positive literals in the effect (add list) ***ADD(a)***
+
+   **RESULT** (**s,a**) = (**s** - **DEL(a)**) **∪** **ADD(a)**
+
+### SUMMARY
+
+• State: conjunction of ground **positive function-free** literals
+
+​		**Closed world** assumption
+
+• Goal: conjunction of ground **positive function-free** literals 
+
+​		Satisfied by **states that contain all literals**
+
+• Action precondition: conjunction of **function-free** literals
+
+• Action effects: conjunction of **function-free** literals 
+
+​		• Positive literals for add list
+​		• Negative literals for delete list
+
+### Problems of STRIPS
+
+• Efficient to solve (∵ of restrictions) 
+
+• Hard to describe the problem
+
+## Planning domain
+
+### what is planning domain
+
+**A set of action schemas** define planning domain, which is problem space.
+
+Planning problem – **action schema** + initial state + goal
+
+## PDDL
+
+###  Action Description Language (ADL)
+
+1. • positive and negative literals in states, open world assumption
+2. • **quantified variables** at goal, **conjunctions and disjunctions** at goal
+3.  • conditional effects
+4.  • equality predicate, typed variables 平等谓词，类型化变量
+
+**PDDL – ADL + extensions**
+
+### difference between STRIPS and PDDL
+
+• **Inequality predicate – not in STRIPS but available in PDDL**
+
+​		• If no inequality, need to explicitly specify such predicates 
+
+​				• E.g.,𝑏≠𝑥
+
+• To move a block, precondition – nothing on top of it
+
+- ¬∃𝑥 𝑂𝑛(𝑥, 𝑏) or ∀𝑥 ¬𝑂𝑛(𝑥, 𝑏) in first-order logic
+- **Strips/PDDL doesn’t allow quantifiers**(Eg. ∃), so we use 𝐶𝑙𝑒𝑎𝑟 𝑏 , which is true when nothing is on b
+
+• Table not same as block – think 𝐶𝑙𝑒𝑎𝑟(𝑇𝑎𝑏𝑙𝑒)?
+
+​		• Define 𝐶𝑙𝑒𝑎𝑟(𝑇𝑎𝑏𝑙𝑒) or generalize 𝐶𝑙𝑒𝑎𝑟(𝑥) behavior
+
+​		• Introduce 𝑀𝑜𝑣𝑒𝑇𝑜𝑇𝑎𝑏𝑙𝑒(𝑏, 𝑥) to allow different behavior
